@@ -3,7 +3,7 @@ name: Compile Slides and Deploy
 on:
   push:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 permissions:
@@ -15,7 +15,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     container:
-      image: pandoc/latex:latest
+      image: pandoc/extra:latest
 
     steps:
       - uses: actions/checkout@v4
