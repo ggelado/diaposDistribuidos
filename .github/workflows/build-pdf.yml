@@ -19,46 +19,18 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: texlive/texlive:latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Caché de las capas de Docker usando GitHub Actions cache
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ hashFiles('Dockerfile') }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Build Docker image (with cache)
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: false
-          load: true
-          tags: latex-builder:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-
-      # Evita que el caché crezca indefinidamente (estrategia "cache rotation")
-      - name: Rotate cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      - name: Install pandoc and make
+        run: apt-get update && apt-get install -y --no-install-recommends pandoc make && rm -rf /var/lib/apt/lists/*
 
       - name: Compile PDF
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/app \
-            -w /app \
-            latex-builder:latest \
-            make
+        run: make
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
