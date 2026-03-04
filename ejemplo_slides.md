@@ -1,6 +1,6 @@
 ---
 title: "¿Cómo afrontar la práctica de Distribuidos?"
-subtitle: "Sin pegarse un tiro ni pegarselo a nadie"
+subtitle: "Sin pegarse un tiro ni pegarselo a nadie. Documento en redacción, revisa última versión en https://ggelado.github.io/diaposDistribuidos/diapos.pdf"
 author: "Gonzalo"
 date: "Marzo 2026"
 babel-lang: spanish
