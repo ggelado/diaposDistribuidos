@@ -16,26 +16,29 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: pandoc/latex:latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
+      - name: Install make
+        run: apk add --no-cache make
+
       - name: Build Slides PDF
         run: make
-      
+
       - name: Prepare deployment
         run: |
           mkdir -p deploy
           cp diapos.pdf deploy/
-      
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      
+
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: deploy
-      
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
