@@ -60,8 +60,8 @@ Ya lo iremos definiendo sobre la marcha.
 Ejecuta en una terminal
 
 ```bash
-wget https://laurel.datsi.fi.upm.es/_media/docencia/asignaturas/sd
-/ring-2026.tgz
+wget https://laurel.datsi.fi.upm.es/_media/docencia/asignaturas
+/sd/ring-2026.tgz
 # 2 líneas para que no se corte
 tar xvfz ring-2026.tgz
 cd DATSI/SSDD/ring.2026/src/
