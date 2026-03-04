@@ -1,0 +1,115 @@
+\documentclass[11pt,xcolor={dvipsnames},hyperref={pdftex,pdfpagemode=UseNone,hidelinks,pdfdisplaydoctitle=true},usepdftitle=false]{beamer}
+
+% ── Español ─────────────────────────────────────────────────
+\usepackage[spanish,es-noquoting,es-noshorthands]{babel}
+
+% ── Presentation.sty ────────────────────────────────────────
+\usepackage{presentation}
+
+% ── Fuentes vía fontspec (LuaLaTeX) ─────────────────────────
+\usepackage{fontspec}
+\setsansfont{Source Sans Pro}
+\setmonofont{Source Code Pro}
+\renewcommand{\familydefault}{\sfdefault}
+
+% Macros opcionales de pmichaillat/latex-math (si los tienes)
+% \usepackage{math}
+
+% ── Metadatos desde pandoc ──────────────────────────────────
+$if(title)$
+\title{$title$}
+$endif$
+$if(subtitle)$
+\subtitle{$subtitle$}
+$endif$
+$if(author)$
+\information{$for(author)$$author$$sep$, $endfor$}%
+$endif$
+$if(date)$
+% el segundo arg de \information es "Lugar -- Fecha"
+$if(institute)$
+\information{$for(author)$$author$$sep$, $endfor$}{$institute$ -- $date$}
+$else$
+\information{$for(author)$$author$$sep$, $endfor$}{$date$}
+$endif$
+$endif$
+
+% ── Paquetes extra que pandoc suele necesitar ───────────────
+\usepackage{calc}
+\usepackage{etoolbox}
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath}
+\usepackage{booktabs,array}
+
+% ── Compatibilidad de longtable con beamer ──────────────────
+\let\longtable=\tabular
+\let\endlongtable=\endtabular
+
+% Disable problematic longtable commands
+\def\endhead{}
+\def\endfoot{}
+\def\midrule{\\\hline}
+\def\toprule{\hline}
+\def\bottomrule{\hline}
+
+% ── Definición de \tightlist para compatibilidad con pandoc ──
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% ── Imágenes ────────────────────────────────────────────────
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+
+% ── Macro pandocbounded para imágenes ────────────────────────
+\newcommand{\pandocbounded}[1]{\begin{minipage}[t]{\linewidth}#1\end{minipage}}
+
+% ── Código fuente ────────────────────────────────────────────
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+
+% ── Cabecera personalizada (--include-in-header) ────────────
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+% ============================================================
+\begin{document}
+
+% Portada
+\frame{\titlepage}
+
+% ── Tabla de contenidos automática (opcional) ───────────────
+$if(toc)$
+\begin{frame}{Contenido}
+  \tableofcontents
+\end{frame}
+$endif$
+
+% ── Cuerpo del documento ────────────────────────────────────
+% Pandoc convierte cada sección H1 (# Título) en un frame con \frametitle
+% y cada sección H2 (## Sección) en una diapositiva de sección con \heading{}
+
+% ── Diapositiva de sección automática al encontrar # ────────
+\AtBeginSection[]{
+  \begin{frame}
+    \vfill
+    \centering
+    \heading{\insertsectionhead}
+    \vfill
+  \end{frame}
+}
+
+
+$body$
+
+% ── Última diapositiva ──────────────────────────────────────
+$if(lastslide)$
+\lastslide
+$endif$
+
+\end{document}
