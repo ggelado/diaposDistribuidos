@@ -65,14 +65,6 @@ $endif$
 \makeatother
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 
-% ── QR fijo en una esquina ──────────────────────────────────
-\setbeamertemplate{background}{
-  \begin{tikzpicture}[remember picture,overlay]
-    \node[anchor=south east, xshift=-2mm, yshift=2mm] at (current page.south east)
-      {\includegraphics[width=1.1cm]{assets/qr.png}};
-  \end{tikzpicture}
-}
-
 % ── Macro pandocbounded para imágenes ────────────────────────
 \newcommand{\pandocbounded}[1]{\begin{minipage}[t]{\linewidth}#1\end{minipage}}
 
