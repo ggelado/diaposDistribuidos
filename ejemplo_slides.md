@@ -67,7 +67,7 @@ tar xvfz ring-2026.tgz
 cd DATSI/SSDD/ring.2026/src/
 ```
 
-Así, directo, sin pensar.
+De una
 
 ## Comunicación con Triqui
 
@@ -106,9 +106,7 @@ Cada vez que queramos hacer una entrega:
 
 3. Introducir el número de matrícula cuando se solicite
 
-4. Confirmar
-
-5. Cuando tenga ganas el corrector (cada 3 hrs, a las en punto) te mandará un correo listo para deprimirte hablando sobre la excelencia de tu código
+4. El corrector corre cada 3h y manda un correo
 
 # A picar código
 
@@ -157,186 +155,142 @@ int ring_init(const char *shrd_dir, unsigned int local_ip, unsigned int remote_i
 }
 ```
 
-## ¿Qué nos dan y cuál es la salida?
+Hay params de **salida** (punteros):
+- `unsigned short *alloc_port` es de **salida**
 
-En C (lenguaje fantástico) algunos parámetros son de entrada y otros son de salida:
+## Crear el socket de servicio
 
-- `const char *shrd_dir`: Entrada
-
-- `unsigned int local_ip`: Entrada
-
-- `unsigned int remote_ip`: Entrada
-
-- `unsigned short remote_port`: Entrada
-
-- `unsigned short *alloc_port`: **SALIDA**
-
-En esta 1era fase vamos a ignorar los remotos, pues de momento es solamente local.
-
-Vamos a leer el enunciado poco a poco:
-
-Debe guardar la información recibida en sus parámetros e implementarse la función ring_self a partir de ella.
-
-## Guardar información recibida en sus parámetros
-
-Pues vamos a hacer eso, eso es sencillo.
-
-Variable arriba y listo:
+Del ejemplo `server.c`:
 
 ```c
-shared_dir_copia = strdup(shrd_dir);
-ip_copia = local_ip;
+if ((s=create_socket_srv(&port)) < 0) return 1;
 ```
 
-`strdup` para copiar los *Strings*.
-
-## Implementar `ring_self`
+Lo adaptamos en `ring_init`:
 
 ```c
-int ring_self(unsigned int *ip, unsigned short *port)
+int s;
+if ((s = create_socket_srv(&port_copia)) < 0) return -1;
+*alloc_port = port_copia;
 ```
 
-Son parámetros de salida (punteros), ya sabes cómo va
+`port_copia` ya tiene el valor para `ring_self`.
 
-```c
-if (!is_initialized()) return -1; // no está inicializada
-*ip = ip_copia;
-// *port = port_copia; // ni caso, ya lo veremos
-return 0;
-```
+## Lanzar el thread servidor
 
-## Debe crear el socket de servicio, para lo que puede usar la función **create_socket_srv**, tal como se hace en el ejemplo propuesto.
-
-¿Qué ejemplo?
-
-Pues este
-
-```c
-int main(int argc, char *argv[]) {
-    int s, s_conec;
-    unsigned int addr_size;
-    unsigned short port;
-    struct sockaddr_in clnt_addr;
-
-    // inicializa el socket y lo prepara para aceptar conexiones
-    if ((s=create_socket_srv(&port)) < 0) return 1;
-    printf("Reservado el puerto %d\n", ntohs(port));
-```
-
-Ejemplo: `server.c`
-
-## Vamos con ello, a copiar sin piedad
-
-```c
-if ((s=create_socket_srv(&port_copia)) < 0) return 1;
-```
-
-(por cierto, ya tenemos el valor de retorno de `*alloc_port`)
-
-Ya podemos completar en ring_self
-
-(además, recuerda que tienes que guardar ese puerto en alguna variable)
-
-## Debe crear el *thread* de servicio que ejecutará la función server_thread de ring_srv.c pasándole como argumento el socket de servicio. Para ello, puede usar la función create_thread de common.c, que crea un *thread* de tipo *detached*.
-
-¿Cómo? ¿Qué pone ahí?
-
-Poco a poco, no nos asustemos:
-
-Vamos a buscar el ejemplo ese que dice, a ver si vemos algo.
-
-Por cierto, ahí te lo dice pero... es en `ring_srv.c`.
-
-## A ver el ejemplito
-
-```c
-while(1) {
-    addr_size=sizeof(clnt_addr);
-    // acepta la conexión
-    if ((s_conec=accept(s, (struct sockaddr *)&clnt_addr, &addr_size))<0){
-        perror("error en accept"); close(s); return 0;
-    }
-    printf("conectado cliente con ip %s y puerto %u\n",
-            inet_ntoa(clnt_addr.sin_addr), ntohs(clnt_addr.sin_port));
-    // crea el thread de servicio pasándole el argumento por valor
-    create_thread(request_handler, (void *)(long)s_conec);
-}
-close(s); // cierra el socket general
-```
-
-Pues ya sabes, A COPIAR SIN PIEDAD
-
-## Debe crear el *thread* de servicio
-
-```c
-create_thread(
-```
-
-## que ejecutará la función server_thread de ring_srv.c
-
-```c
-create_thread(request_handler
-```
-
-## pasándole como argumento el socket de servicio
+Del ejemplo `server.c`:
 
 ```c
 create_thread(request_handler, (void *)(long)s_conec);
 ```
 
-Si es que es calcado, literalmente, **COPIA LO QUE VIENE EN EL EJEMPLO**.
-
-## Nos vamos al código
+Lo adaptamos:
 
 ```c
-// función para el thread que implementa la funcionalidad de servidor
-// debe recibir como argumento el socket de servicio
-void *server_thread(void *arg){
-    return NULL;
+create_thread(server_thread, (void *)(long)s);
+```
+
+
+## La parte servidora: `ring_srv.c`
+
+Adapta el bucle de `server.c`.
+
+- El argumento llega como `(long)arg`
+- Bucle `while(1)` con `accept`
+- Por cada conexión: `create_thread` con el socket de conexión
+- Devuelve `NULL` (es `void *`, no `int`)
+
+## Prueba del Paso 1
+
+```bash
+mkdir dir1 && ./ring dir1
+```
+
+En otra terminal:
+
+```bash
+ss -tap | grep <puerto>
+# debe aparecer LISTEN con el PID de ring
+```
+
+# Fase 1 - Paso 2
+
+## Primera operación remota
+
+**Objetivo**: que un nodo le pregunte el PID a otro.
+
+Sin parámetros de entrada, devuelve un `int`.
+
+## Códigos de operación
+
+Antes de enviar nada hay que decirle al servidor **qué quieres**. Opciones:
+
+- Carácter: `'P'`
+- Entero: `0`
+- String: `"GETPID"`
+
+El `char` y el entero son los más cómodos para `switch` (en C no podemos hacerlo con un string).
+
+## Parte cliente: `ring_remote_pid`
+
+```c
+char op = 'P';
+send(s, &op, sizeof(char), 0);
+
+int pid;
+recv(s, &pid, sizeof(int), MSG_WAITALL);
+close(s);
+return ntohl(pid);
+```
+
+## Conectar con IP y puerto en formato de red
+
+`create_socket_cln` espera strings. Aquí tenemos enteros en formato red:
+
+```c
+struct sockaddr_in addr;
+addr.sin_family      = AF_INET;
+addr.sin_addr.s_addr = remote_ip;  // formato red
+addr.sin_port        = remote_port; // formato red
+
+int s = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+connect(s, (struct sockaddr *)&addr, sizeof(addr));
+```
+
+Vas a usar esto en **todas** las operaciones remotas..
+
+## Parte servidora
+
+```c
+char op;
+recv(soc, &op, sizeof(char), MSG_WAITALL);
+
+switch(op) {
+    case 'P': {
+        int pid = htonl(getpid());
+        write(soc, &pid, sizeof(int));
+        break;
+    }
 }
+close(soc);
+return NULL;
 ```
 
-y a hacer lo mismo.
+## Prueba del Paso 2
 
-Acuerdate de dar de alta variables y demás para que compile, y que en vez de retornar 0 retornamos NULL (es `void`), PERO EL RESTO IGUAL.
-
-# ¿Y ya está?
-
-## ¿Parte 1 - Paso 1 terminada?
-
-Solo hay una forma de saberlo, probarlo:
-
-Según el enunciado, hay que hacer esto:
-
-```
-ssoo@triqui1:src$ mkdir dir1
-ssoo@triqui1:src$ ./ring dir1
-Bienvenido a la red P2P RING
-----------------------------
-El equipo triqui1.fi.upm.es con IP 138.100.240.42 y puerto 38503 (PID 2542419) es el primer nodo de una nueva red
-
-Seleccione operación (línea vacía para terminar; en menús internos para volver a menú principal)
-    I: obtiene Info de nodo local| P: getPid|S: Sucesor|R:sucesor Remoto|U: sUcesor de sucesor remoto|D: Download|L: Lookup fichero|G: Get fichero 
+```bash
+./ring dir1
+# pulsa P, introduce la IP y puerto del propio nodo
 ```
 
-## 
-
-El resultado de esa operación (IP 138.100.240.42 port 38503), que corresponde a la operación ring_self, es correcto ya que coincide con los datos mostrados en el mensaje de bienvenida.
-Podemos verificar en otra ventana que ese proceso (PID=2542419) está escuchando por ese puerto:
-
 ```
-ssoo@triqui1:src$ ss -tap | grep 38503
-LISTEN    0      5                      0
+PID 2576024
 ```
 
-# Parece que funciona
+Debe coincidir con el PID del mensaje de bienvenida.
 
-## Entonces...
+# A currar
 
-Ya te funciona algo, ahora a entregar por triqui y rezar
-
-El paso 2 para la siguiente versión de este documento.
-
-## Y mañana...
+## Haz funcionar esto
 
 ![](assets/2026-03-04-19-37-23-image.png)
