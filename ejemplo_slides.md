@@ -1,6 +1,6 @@
 ---
 title: "¿Cómo afrontar la práctica de Distribuidos?"
-subtitle: "Sin pegarse un tiro ni pegarselo a nadie. Documento en redacción, revisa última versión en https://ggelado.github.io/diaposDistribuidos/diapos.pdf"
+subtitle: "Sin pegarse un tiro ni pegarselo a nadie. Documento en redacción, revisa última versión."
 author: "Gonzalo"
 date: "Marzo 2026"
 babel-lang: spanish
@@ -12,6 +12,15 @@ header-includes:
   - \usepackage{presentation}
 
 ---
+
+## Documentación
+
+- Estas diapositivas: https://ggelado.github.io/diaposDistribuidos/diapos.pdf
+- En documento para leer: https://ggelado.github.io/diaposDistribuidos/documento.docx
+
+Este documento está en redacción, cada cambio actualiza los ficheros en esos enlaces.
+
+Consulta regularmente la última versión en esos enlaces.
 
 # Introducción
 
