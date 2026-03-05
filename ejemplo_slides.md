@@ -235,7 +235,7 @@ if ((s=create_socket_srv(&port_copia)) < 0) return 1;
 
 Ya podemos completar en ring_self
 
-(por cierto, recuerda que tienes que guardar ese puerto en alguna variable)
+(además, recuerda que tienes que guardar ese puerto en alguna variable)
 
 ## Debe crear el *thread* de servicio que ejecutará la función server_thread de ring_srv.c pasándole como argumento el socket de servicio. Para ello, puede usar la función create_thread de common.c, que crea un *thread* de tipo *detached*.
 
@@ -265,6 +265,26 @@ close(s); // cierra el socket general
 ```
 
 Pues ya sabes, A COPIAR SIN PIEDAD
+
+## Debe crear el *thread* de servicio
+
+```c
+create_thread(
+```
+
+## que ejecutará la función server_thread de ring_srv.c
+
+```c
+create_thread(request_handler
+```
+
+## pasándole como argumento el socket de servicio
+
+```c
+create_thread(request_handler, (void *)(long)s_conec);
+```
+
+Si es que es calcado, literalmente, **COPIA LO QUE VIENE EN EL EJEMPLO**.
 
 ## Nos vamos al código
 
