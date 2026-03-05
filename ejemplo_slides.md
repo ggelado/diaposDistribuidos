@@ -165,49 +165,135 @@ int ring_init(const char *shrd_dir, unsigned int local_ip, unsigned int remote_i
 ```
 
 Hay params de **salida** (punteros):
+
 - `unsigned short *alloc_port` es de **salida**
 
-## Crear el socket de servicio
+## Debe guardar la información recibida en sus parámetros
 
-Del ejemplo `server.c`:
+Pues vamos a hacer eso, eso es sencillo.
 
-```c
-if ((s=create_socket_srv(&port)) < 0) return 1;
-```
-
-Lo adaptamos en `ring_init`:
+Variable arriba y listo:
 
 ```c
-int s;
-if ((s = create_socket_srv(&port_copia)) < 0) return -1;
-*alloc_port = port_copia;
+shared_dir_copia = strdup(shrd_dir);
+ip_copia = local_ip;
 ```
 
-`port_copia` ya tiene el valor para `ring_self`.
+`strdup` para copiar los *Strings*.
 
-## Lanzar el thread servidor
+## e implementarse la función `ring_self` a partir de ella.
 
-Del ejemplo `server.c`:
+```c
+int ring_self(unsigned int *ip, unsigned short *port)
+```
+
+Son parámetros de salida (punteros), ya sabes cómo va
+
+```c
+if (!is_initialized()) return -1; // no está inicializada
+*ip = ip_copia;
+// *port = port_copia; // ni caso, ya lo veremos
+return 0;
+```
+
+# Primer párrafo superado
+
+## Debe crear el socket de servicio, para lo que puede usar la función **create_socket_srv**, tal como se hace en el ejemplo propuesto.
+
+¿Qué ejemplo?
+
+Pues este
+
+```c
+int main(int argc, char *argv[]) {
+    int s, s_conec;
+    unsigned int addr_size;
+    unsigned short port;
+    struct sockaddr_in clnt_addr;
+
+    // inicializa el socket y lo prepara para aceptar conexiones
+    if ((s=create_socket_srv(&port)) < 0) return 1;
+    printf("Reservado el puerto %d\n", ntohs(port));
+```
+
+Ejemplo: `server.c`
+
+## Vamos con ello, a copiar sin piedad
+
+```c
+if ((s=create_socket_srv(&port_copia)) < 0) return 1;
+```
+
+(por cierto, ya tenemos el valor de retorno de `*alloc_port`)
+
+Ya podemos completar en ring_self
+
+(además, recuerda que tienes que guardar ese puerto en alguna variable)
+
+## Debe crear el *thread* de servicio que ejecutará la función server_thread de ring_srv.c pasándole como argumento el socket de servicio. Para ello, puede usar la función create_thread de common.c, que crea un *thread* de tipo *detached*.
+
+¿Cómo? ¿Qué pone ahí?
+
+Poco a poco, no nos asustemos:
+
+Vamos a buscar el ejemplo ese que dice, a ver si vemos algo.
+
+Por cierto, ahí te lo dice pero... es en `ring_srv.c`.
+
+## A ver el ejemplito
+
+```c
+while(1) {
+    addr_size=sizeof(clnt_addr);
+    // acepta la conexión
+    if ((s_conec=accept(s, (struct sockaddr *)&clnt_addr, &addr_size))<0){
+        perror("error en accept"); close(s); return 0;
+    }
+    printf("conectado cliente con ip %s y puerto %u\n",
+            inet_ntoa(clnt_addr.sin_addr), ntohs(clnt_addr.sin_port));
+    // crea el thread de servicio pasándole el argumento por valor
+    create_thread(request_handler, (void *)(long)s_conec);
+}
+close(s); // cierra el socket general
+```
+
+Pues ya sabes, A COPIAR SIN PIEDAD
+
+PD: Lo de formato de red se encargan `inet_ntoa` y `ntohs` (esto es de SSOO, pero no hace falta, tú copia y no preguntes).
+
+## Debe crear el *thread* de servicio
+
+```c
+create_thread(
+```
+
+## que ejecutará la función server_thread de ring_srv.c
+
+```c
+create_thread(request_handler
+```
+
+## pasándole como argumento el socket de servicio
 
 ```c
 create_thread(request_handler, (void *)(long)s_conec);
 ```
 
-Lo adaptamos:
+Si es que es calcado, literalmente, **COPIA LO QUE VIENE EN EL EJEMPLO**.
+
+## Nos vamos al código
 
 ```c
-create_thread(server_thread, (void *)(long)s);
+// función para el thread que implementa la funcionalidad de servidor
+// debe recibir como argumento el socket de servicio
+void *server_thread(void *arg){
+    return NULL;
+}
 ```
 
+y a hacer lo mismo.
 
-## La parte servidora: `ring_srv.c`
-
-Adapta el bucle de `server.c`.
-
-- El argumento llega como `(long)arg`
-- Bucle `while(1)` con `accept`
-- Por cada conexión: `create_thread` con el socket de conexión
-- Devuelve `NULL` (es `void *`, no `int`)
+Acuerdate de dar de alta variables y demás para que compile, y que en vez de retornar 0 retornamos NULL (es `void`), PERO EL RESTO IGUAL.
 
 ## Prueba del Paso 1
 
@@ -266,7 +352,7 @@ int s = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 connect(s, (struct sockaddr *)&addr, sizeof(addr));
 ```
 
-Vas a usar esto en **todas** las operaciones remotas..
+Este esquema se repite.
 
 ## Parte servidora
 
@@ -303,3 +389,78 @@ Debe coincidir con el PID del mensaje de bienvenida.
 ## Haz funcionar esto
 
 ![](assets/2026-03-04-19-37-23-image.png)
+
+# Avanzado
+
+Esto es algo adicional, no es puramente de la práctica, y puedes omitirlo directamente, pero si utilizas git, y tienes algo de destreza, puede llegar a ser muy cómodo:
+
+## Entregando con git push
+
+¿Sabías que triqui puede ser un servidor git?
+
+Sí, no solo GitHub y GitLab son servidores git. Puedes crear un servidor git del siguiente modo:
+
+1. Ubica en triqui el directorio `~/DATSI/SSDD/ring.2026`
+
+2. Da de alta un repositorio (ya sabes, `git init`. Recuerda que las ramas deberían llamarse igual para evitar problemas más adelante, aunque no es fundamental.)
+
+3. Regístralo como `origin` en tu carpeta de trabajo.
+
+## Agregando orígenes a git
+
+Tienes 2 opciones: Solo usar triqui como origen, o usar tanto triqui como github.
+
+- `git remote add [nombre] [url]`
+
+Donde `url` es `ssh://usuario@triqui1.fi.upm.es` `/homefi/alumnos/rutaHOME` `/DATSI/SSDD/ring.2026`
+
+Recuerda consultar la ruta completa con el mandato
+
+```bash
+pwd
+```
+
+Puedes llamar al remote origin, o simplemente algo como triqui (tendrás que hacer `git push triqui`)
+
+## Push combinado
+
+```bash
+git remote add origin https://repo1.git # p.ej. github
+git remote set-url --add --push origin # url triqui de antes
+```
+
+Nota: Es posible que tengas que configurar el upstream
+
+```bash
+git push --set-upstream origin main # o master
+```
+
+## Entrega automatizada
+
+La gracia de todo esto es que puedas entregar de forma automática al hacer push. Para ello:
+
+1. Accede a `~/DATSI/SSDD/ring.2026/.git/hooks`
+
+2. Crea un fichero `post-receive` 
+
+Ese fichero será un script bash con instrucciones a ejecutar cada vez que reciba un push. En nuestro caso, queremos que corra el script de entrega:
+
+## Post-receive hook
+
+```bash
+#!/bin/bash
+set -euo pipefail
+cd "/homefi/alumnos/TUHOME/DATSI/SSDD/ring.2026"
+```
+
+![](assets/2026-03-05-20-27-13-image.png)
+
+La parte roja sustitúyela por tu número de matrícula (`numMat\ns\ns\n`)
+
+Eso lo que hace es seguir los pasos del corrector:
+
+1. Número de matrícula.
+
+2. Confirmar entrega.
+
+3. Sobrescribir entrega.
