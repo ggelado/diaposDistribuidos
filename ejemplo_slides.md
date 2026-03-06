@@ -137,6 +137,38 @@ Pues por el principio.
 
 No empieces a leerte todo el enunciado, vamos por partes:
 
+## Esquema básico de conexión (esto hay que tatuarselo)
+
+```c
+/* CLIENTE */
+
+// Conectamos con server
+int s = create_socket_cln(remote_ip, remote_port);
+
+// Si hay error retornar algo que no sea cero
+if (s < 0) return ERROR;
+
+char op_code = OPERACION; // char, int...
+if (send(s, &op_code, sizeof(char), 0) != sizeof(char)) {
+	perror("mensaje_error");
+	close(s);
+	return ERROR;
+}
+// Después a enviar y recibir datos 
+// y demás con send y recv
+```
+
+## Esquema básico de servidor (lo mismo, grabarselo)
+
+```c
+switch (cod_operacion) {
+        case EL_QUE_SEA: {
+            // Tramito operacion
+            // Con recv recibo datos adicionales
+            // Con send envío respuestas
+            break;
+```
+
 # Fase 1 - Paso 1
 
 ## Desplegar parte servidora
