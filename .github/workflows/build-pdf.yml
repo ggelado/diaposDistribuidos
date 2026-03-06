@@ -29,10 +29,9 @@ jobs:
       - name: Install pandoc and make
         run: apt-get update && apt-get install -y --no-install-recommends pandoc make && rm -rf /var/lib/apt/lists/*
 
-      - name: Compile PDF and DOCX
+      - name: Compile documents
         run: |
-          make diapos.pdf
-          make documento.docx
+          make
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
