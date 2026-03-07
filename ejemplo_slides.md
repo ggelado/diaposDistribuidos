@@ -150,9 +150,9 @@ if (s < 0) return ERROR;
 
 char op_code = OPERACION; // char, int...
 if (send(s, &op_code, sizeof(char), 0) != sizeof(char)) {
-	perror("mensaje_error");
-	close(s);
-	return ERROR;
+    perror("mensaje_error");
+    close(s);
+    return ERROR;
 }
 // Después a enviar y recibir datos 
 // y demás con send y recv
@@ -421,6 +421,16 @@ Debe coincidir con el PID del mensaje de bienvenida.
 ## Haz funcionar esto
 
 ![](assets/2026-03-04-19-37-23-image.png)
+
+## Experiencia personal
+
+- Fase 1: Difícil (no sabes cómo empezar).
+
+- Fase 2: Es seguir lo que estabas haciendo, sencilla.
+
+- Fase 3: Tiene algo de lío porque tienes que proyectar ficheros y demás (`mmap` y todo eso).
+
+- Fase 4: Bastante sencilla la verdad. La lógica es ir preguntando al sucesor restando 1 en `hops`.
 
 # Avanzado
 
