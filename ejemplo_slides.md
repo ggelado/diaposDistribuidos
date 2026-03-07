@@ -64,6 +64,12 @@ Ya lo iremos definiendo sobre la marcha.
 
 # Arrancando
 
+Recuerda: Ya sabes que copiar texto de un PDF a una terminal puede hacer cosas raras.
+
+
+
+Saltos de línea que no debes poner, caracteres raros, comillas... Ten cuidado al copiar y revisa bien. En algunas diapositivas se divide el texto en 2 líneas para que no se corte, eso no significa que en tu terminal deban ser 2 líneas.
+
 ## Ficheros de Trabajo
 
 Ejecuta en una terminal
@@ -96,6 +102,8 @@ scp ficheroOrigen usuario@triqui.fi.upm.es:
 ```
 
 Usa esos programas, por favor, te salvan la vida.
+
+(Los nombres son enlaces, puedes hacer click en ellos)
 
 ## Gestor de Entregas
 
