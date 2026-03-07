@@ -228,6 +228,8 @@ if (!is_initialized()) return -1; // no está inicializada
 return 0;
 ```
 
+**Recuerda**: Self. Retornamos la PROPIA, no la remota.
+
 # Primer párrafo superado
 
 ## Debe crear el socket de servicio, para lo que puede usar la función **create_socket_srv**, tal como se hace en el ejemplo propuesto.
