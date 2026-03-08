@@ -1,9 +1,6 @@
-name: Build PDF and Deploy to GitHub Pages
-
+name: Deploy to GitHub Pages
 on:
   push:
-    branches: [master]
-  pull_request:
     branches: [master]
   workflow_dispatch:
 
@@ -17,35 +14,18 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    container:
-      image: texlive/texlive:latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install pandoc and make
-        run: apt-get update && apt-get install -y --no-install-recommends pandoc make && rm -rf /var/lib/apt/lists/* && tlmgr install sourcesanspro
-
-      - name: Compile documents
-        run: |
-          make
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-
   deploy:
-    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

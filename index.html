@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Gonzalo" />
+  <title>¿Cómo afrontar la práctica de Distribuidos?</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">¿Cómo afrontar la práctica de Distribuidos?</h1>
+<p class="subtitle">Sin pegarse un tiro ni pegarselo a nadie. Documento
+en redacción, revisa última versión.</p>
+<p class="author">Gonzalo</p>
+<p class="date">Marzo 2026</p>
+</header>
+<h2 id="documentación">Documentación</h2>
+<ul>
+<li>Estas diapositivas:
+https://ggelado.github.io/diaposDistribuidos/diapos.pdf</li>
+<li>En documento para leer:
+https://ggelado.github.io/diaposDistribuidos/documento.docx</li>
+</ul>
+<p>Este documento está en redacción, cada cambio actualiza los ficheros
+en esos enlaces.</p>
+<p>Consulta regularmente la última versión en esos enlaces.</p>
+<h1 id="introducción">Introducción</h1>
+<h2 id="de-qué-va-esto">¿De qué va esto?</h2>
+<p>Va de que los 4 nodos de triqui (p.ej.) hablen entre ellos, se manden
+ficheritos, mensajitos y demás, pero que ninguno sea un servidor,
+<strong>TODOS SON SERVIDORES Y CLIENTES</strong>.</p>
+<p>Eso es el P2P (lo que se hacía hace años con los torrents
+ilegales).</p>
+<p>Ya lo iremos definiendo sobre la marcha.</p>
+<h2 id="qué-necesito">¿Qué necesito?</h2>
+<ul>
+<li><p>Entorno linux:</p>
+<ul>
+<li><p>WSL</p></li>
+<li><p>Máquina Virtual</p></li>
+<li><p>Linux nativo</p></li>
+<li><p>¿Triqui? ¿Escritorios virtuales? (si tu paciencia y cordura lo
+permiten)</p></li>
+</ul></li>
+<li><p>Conexión con triqui</p></li>
+<li><p>Usar el Gestor de Entregas de Triqui (ya explicaré cómo
+funciona)</p></li>
+</ul>
+<h2 id="empezamos">¿Empezamos?</h2>
+<ol type="1">
+<li><p>Coge un editor cómodo (vas a dedicarle un ratito)</p>
+<ul>
+<li><p>VSCode</p></li>
+<li><p>CLion</p></li>
+<li><p>¿Nano? ¿vi? ¿emacs?</p></li>
+</ul></li>
+</ol>
+<p>2- Pon tu entorno de trabajo</p>
+<p>3- Enciende la VPN</p>
+<h1 id="arrancando">Arrancando</h1>
+<p>Recuerda: Ya sabes que copiar texto de un PDF a una terminal puede
+hacer cosas raras.</p>
+<p>Saltos de línea que no debes poner, caracteres raros, comillas… Ten
+cuidado al copiar y revisa bien. En algunas diapositivas se divide el
+texto en 2 líneas para que no se corte, eso no significa que en tu
+terminal deban ser 2 líneas.</p>
+<h2 id="ficheros-de-trabajo">Ficheros de Trabajo</h2>
+<p>Ejecuta en una terminal</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://laurel.datsi.fi.upm.es/_media/docencia/asignaturas</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">/sd/ring-2026.tgz</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 2 líneas para que no se corte</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tar</span> xvfz ring-2026.tgz</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> DATSI/SSDD/ring.2026/src/</span></code></pre></div>
+<p>De una</p>
+<h2 id="comunicación-con-triqui">Comunicación con Triqui</h2>
+<p>Vas a pasar muchas veces ficheros de triqui a tu ordenador y
+viceversa, puedes hacer SCP todo el rato, pero vas a deprimirte.</p>
+<ul>
+<li><p><a href="https://bitvise.com/ssh-client-download">Bitvise</a> (Mi
+preferido para Windows)</p></li>
+<li><p><a
+href="https://itsupport.cs.uvic.ca/tutorials/linux_sftp/#:~:text=SFTP%20using%20Linux%20GUI%20File%20Browser%20(Nautilus)">Uso
+Ubuntu nativo</a></p></li>
+</ul>
+<p>O si no…</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> ficheroOrigen usuario@triqui.fi.upm.es:</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">~/DATSI/SSDD/ring.2026/src/</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2 líneas para que no se corte</span></span></code></pre></div>
+<p>Usa esos programas, por favor, te salvan la vida.</p>
+<p>(Los nombres son enlaces, puedes hacer click en ellos)</p>
+<h2 id="gestor-de-entregas">Gestor de Entregas</h2>
+<p>Funciona igual que en SSOO:</p>
+<p><strong>ADVERTENCIA</strong>: Por alguna razón el Gestor espera que
+los ficheros estén en <code>~/DATSI/SSDD/ring.2026/</code> pero los
+profes han puesto el código de la plantilla en <code>todoEso/src</code>,
+por lo que <strong>falla</strong>. Saca los ficheros de src y llévalos a
+esa carpeta.</p>
+<p>Con Bitvise y demás es sencilla la operación.</p>
+<h2 id="gestor-de-entregas-2">Gestor de Entregas (2)</h2>
+<p>Cada vez que queramos hacer una entrega:</p>
+<ol type="1">
+<li><p>Entrar en triqui</p></li>
+<li><p>Poner <strong>DONDE SEA</strong> (en una terminal):
+<code>entrega.sd ring.2026</code></p></li>
+<li><p>Introducir el número de matrícula cuando se solicite</p></li>
+<li><p>El corrector corre cada 3h y manda un correo</p></li>
+</ol>
+<h1 id="a-picar-código">A picar código</h1>
+<h2 id="dónde-se-toca">¿Dónde se toca?</h2>
+<ul>
+<li><p>ring_cln.c</p></li>
+<li><p>ring_srv.c</p></li>
+<li><p>common.c</p></li>
+<li><p>include/common.h</p></li>
+</ul>
+<p>Y ya está, el resto de ficheros se miran pero no se tocan.</p>
+<h2 id="cómo-empiezo">¿Cómo empiezo?</h2>
+<p>Pues por el principio.</p>
+<p>No empieces a leerte todo el enunciado, vamos por partes:</p>
+<h2 id="esquema-básico-de-conexión-esto-hay-que-tatuarselo">Esquema
+básico de conexión (esto hay que tatuarselo)</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* CLIENTE */</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">// Conectamos con server</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> s <span class="op">=</span> create_socket_cln<span class="op">(</span>remote_ip<span class="op">,</span> remote_port<span class="op">);</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Si hay error retornar algo que no sea cero</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>s <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="cf">return</span> ERROR<span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> op_code <span class="op">=</span> OPERACION<span class="op">;</span> <span class="co">// char, int...</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>send<span class="op">(</span>s<span class="op">,</span> <span class="op">&amp;</span>op_code<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">char</span><span class="op">),</span> <span class="dv">0</span><span class="op">)</span> <span class="op">!=</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">char</span><span class="op">))</span> <span class="op">{</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    perror<span class="op">(</span><span class="st">&quot;mensaje_error&quot;</span><span class="op">);</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>s<span class="op">);</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ERROR<span class="op">;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">// Después a enviar y recibir datos </span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">// y demás con send y recv</span></span></code></pre></div>
+<h2 id="esquema-básico-de-servidor-lo-mismo-grabarselo">Esquema básico
+de servidor (lo mismo, grabarselo)</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">switch</span> <span class="op">(</span>cod_operacion<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>        <span class="cf">case</span> EL_QUE_SEA<span class="op">:</span> <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>            <span class="co">// Tramito operacion</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>            <span class="co">// Con recv recibo datos adicionales</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>            <span class="co">// Con send envío respuestas</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span><span class="op">;</span></span></code></pre></div>
+<h1 id="fase-1---paso-1">Fase 1 - Paso 1</h1>
+<h2 id="interfaces">Interfaces</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">// inicia el nodo añadiéndolo a la red P2P si ya está creada;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">// los puertos e IPs deben estar en formato de red;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">// debe devolver en el último parámetro el puerto reservado </span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">// ¡¡¡OJO A ESTO ÚLTIMO!!!: en formato red;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">// retorna 0 si OK y -1 si error</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> ring_init<span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>shared_dir<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">int</span> local_ip<span class="op">,</span> </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> remote_ip<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">short</span> remote_port<span class="op">,</span> </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">short</span> <span class="op">*</span>alloc_port<span class="op">);</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">// función local que devuelve la IP y el puerto del nodo</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> ring_self<span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> <span class="op">*</span>ip<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">short</span> <span class="op">*</span>port<span class="op">);</span></span></code></pre></div>
+<h2 id="desplegar-parte-servidora">Desplegar parte servidora</h2>
+<p>Vamos con el fichero <code>ring_cln.c</code>.</p>
+<p><strong>Objetivo</strong>:</p>
+<ul>
+<li>Debe guardar la información recibida en sus parámetros e
+implementarse la función ring_self a partir de ella.</li>
+<li>Debe crear el socket de servicio, para lo que puede usar la
+función create_socket_srv, tal como se hace en el ejemplo propuesto. Esa
+función devuelve el puerto seleccionado por el sistema operativo en
+formato de red, que, a su vez, debe ser devuelto por esta función.</li>
+<li>Debe crear el <em>thread</em> de servicio que ejecutará la
+función server_thread de ring_srv.c pasándole como argumento el socket
+de servicio. Para ello, puede usar la función create_thread de common.c,
+que crea un <em>thread</em> de tipo <em>detached</em>.</li>
+</ul>
+<h2 id="qué-tenemos">¿Qué tenemos?</h2>
+<p>Nos dan esto</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">// inicia el nodo añadiéndolo a la red P2P si ya está creada;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">// los puertos e IPs deben estar en formato de red;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">// debe devolver en el último parámetro el puerto reservado en formato red;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">// retorna 0 si OK y -1 si error</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> ring_init<span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>shrd_dir<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">int</span> local_ip<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">int</span> remote_ip<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">short</span> remote_port<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">short</span> <span class="op">*</span>alloc_port<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>initialize<span class="op">())</span> <span class="cf">return</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span> <span class="co">// ya está inicializada</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Hay params de <strong>salida</strong> (punteros):</p>
+<ul>
+<li><code>unsigned short *alloc_port</code> es de
+<strong>salida</strong></li>
+</ul>
+<h2 id="debe-guardar-la-información-recibida-en-sus-parámetros">Debe
+guardar la información recibida en sus parámetros</h2>
+<p>Pues vamos a hacer eso, eso es sencillo.</p>
+<p>Variable arriba y listo:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>shared_dir_copia <span class="op">=</span> strdup<span class="op">(</span>shrd_dir<span class="op">);</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ip_copia <span class="op">=</span> local_ip<span class="op">;</span></span></code></pre></div>
+<p><code>strdup</code> para copiar los <em>Strings</em>.</p>
+<h2 id="e-implementarse-la-función-ring_self-a-partir-de-ella.">e
+implementarse la función <code>ring_self</code> a partir de ella.</h2>
+<p><code>ring_self</code> devuelve los datos propios.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> ring_self<span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> <span class="op">*</span>ip<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">short</span> <span class="op">*</span>port<span class="op">)</span></span></code></pre></div>
+<p>Son parámetros de salida (punteros), ya sabes cómo va</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(!</span>is_initialized<span class="op">())</span> <span class="cf">return</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span> <span class="co">// no está inicializada</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="op">*</span>ip <span class="op">=</span> ip_copia<span class="op">;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">// *port = port_copia; // ni caso, ya lo veremos</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span></code></pre></div>
+<p><strong>Recuerda</strong>: Self. Retornamos la PROPIA, no la
+remota.</p>
+<h1 id="primer-párrafo-superado">Primer párrafo superado</h1>
+<h2
+id="debe-crear-el-socket-de-servicio-para-lo-que-puede-usar-la-función-create_socket_srv-tal-como-se-hace-en-el-ejemplo-propuesto.">Debe
+crear el socket de servicio, para lo que puede usar la
+función <strong>create_socket_srv</strong>, tal como se hace en el
+ejemplo propuesto.</h2>
+<p>¿Qué ejemplo?</p>
+<p>Pues este</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span>argv<span class="op">[])</span> <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> s<span class="op">,</span> s_conec<span class="op">;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> addr_size<span class="op">;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">short</span> port<span class="op">;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">struct</span> sockaddr_in clnt_addr<span class="op">;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">// inicializa el socket y lo prepara para aceptar conexiones</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">((</span>s<span class="op">=</span>create_socket_srv<span class="op">(&amp;</span>port<span class="op">))</span> <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;Reservado el puerto </span><span class="sc">%d\n</span><span class="st">&quot;</span><span class="op">,</span> ntohs<span class="op">(</span>port<span class="op">));</span></span></code></pre></div>
+<p>Ejemplo: <code>server.c</code></p>
+<h2 id="vamos-con-ello-a-copiar-sin-piedad">Vamos con ello, a copiar sin
+piedad</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">((</span>s<span class="op">=</span>create_socket_srv<span class="op">(&amp;</span>port_copia<span class="op">))</span> <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span></code></pre></div>
+<p>(por cierto, ya tenemos el valor de retorno de
+<code>*alloc_port</code>)</p>
+<p>Ya podemos completar en ring_self</p>
+<p>(además, recuerda que tienes que guardar ese puerto en alguna
+variable)</p>
+<h2
+id="debe-crear-el-thread-de-servicio-que-ejecutará-la-función-server_thread-de-ring_srv.c-pasándole-como-argumento-el-socket-de-servicio.-para-ello-puede-usar-la-función-create_thread-de-common.c-que-crea-un-thread-de-tipo-detached.">Debe
+crear el <em>thread</em> de servicio que ejecutará la
+función server_thread de ring_srv.c pasándole como argumento el socket
+de servicio. Para ello, puede usar la función create_thread de common.c,
+que crea un <em>thread</em> de tipo <em>detached</em>.</h2>
+<p>¿Cómo? ¿Qué pone ahí?</p>
+<p>Poco a poco, no nos asustemos:</p>
+<p>Vamos a buscar el ejemplo ese que dice, a ver si vemos algo.</p>
+<p>Por cierto, ahí te lo dice pero… es en <code>ring_srv.c</code>.</p>
+<h2 id="a-ver-el-ejemplito">A ver el ejemplito</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span><span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    addr_size<span class="op">=</span><span class="kw">sizeof</span><span class="op">(</span>clnt_addr<span class="op">);</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// acepta la conexión</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">((</span>s_conec<span class="op">=</span>accept<span class="op">(</span>s<span class="op">,</span> <span class="op">(</span><span class="kw">struct</span> sockaddr <span class="op">*)&amp;</span>clnt_addr<span class="op">,</span> <span class="op">&amp;</span>addr_size<span class="op">))&lt;</span><span class="dv">0</span><span class="op">){</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span><span class="st">&quot;error en accept&quot;</span><span class="op">);</span> close<span class="op">(</span>s<span class="op">);</span> <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;conectado cliente con ip </span><span class="sc">%s</span><span class="st"> y puerto </span><span class="sc">%u\n</span><span class="st">&quot;</span><span class="op">,</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>            inet_ntoa<span class="op">(</span>clnt_addr<span class="op">.</span>sin_addr<span class="op">),</span> ntohs<span class="op">(</span>clnt_addr<span class="op">.</span>sin_port<span class="op">));</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">// crea el thread de servicio pasándole el argumento por valor</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    create_thread<span class="op">(</span>request_handler<span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)(</span><span class="dt">long</span><span class="op">)</span>s_conec<span class="op">);</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>close<span class="op">(</span>s<span class="op">);</span> <span class="co">// cierra el socket general</span></span></code></pre></div>
+<p>Pues ya sabes, A COPIAR SIN PIEDAD</p>
+<p>PD: Lo de formato de red se encargan <code>inet_ntoa</code> y
+<code>ntohs</code> (esto es de SSOO, pero no hace falta, tú copia y no
+preguntes).</p>
+<h2 id="debe-crear-el-thread-de-servicio">Debe crear
+el <em>thread</em> de servicio</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>create_thread<span class="op">(</span></span></code></pre></div>
+<h2 id="que-ejecutará-la-función-server_thread-de-ring_srv.c">que
+ejecutará la función server_thread de ring_srv.c</h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>create_thread<span class="op">(</span>request_handler</span></code></pre></div>
+<h2 id="pasándole-como-argumento-el-socket-de-servicio">pasándole como
+argumento el socket de servicio</h2>
+<div class="sourceCode" id="cb15"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>create_thread<span class="op">(</span>request_handler<span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)(</span><span class="dt">long</span><span class="op">)</span>s_conec<span class="op">);</span></span></code></pre></div>
+<p>Si es que es calcado, literalmente, <strong>COPIA LO QUE VIENE EN EL
+EJEMPLO</strong>.</p>
+<h2 id="nos-vamos-al-código">Nos vamos al código</h2>
+<div class="sourceCode" id="cb16"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">// función para el thread que implementa la funcionalidad de servidor</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">// debe recibir como argumento el socket de servicio</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="op">*</span>server_thread<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">){</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> NULL<span class="op">;</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>y a hacer lo mismo.</p>
+<p>Acuerdate de dar de alta variables y demás para que compile, y que en
+vez de retornar 0 retornamos NULL (es <code>void</code>), PERO EL RESTO
+IGUAL.</p>
+<h2 id="prueba-del-paso-1">Prueba del Paso 1</h2>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> dir1 <span class="kw">&amp;&amp;</span> <span class="ex">./ring</span> dir1</span></code></pre></div>
+<p>En otra terminal:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ss</span> <span class="at">-tap</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="op">&lt;</span>puerto<span class="op">&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># debe aparecer LISTEN con el PID de ring</span></span></code></pre></div>
+<h1 id="fase-1---paso-2">Fase 1 - Paso 2</h1>
+<h2 id="primera-operación-remota">Primera operación remota</h2>
+<p><strong>Objetivo</strong>: que un nodo le pregunte el PID a otro.</p>
+<p>Sin parámetros de entrada, devuelve un <code>int</code>.</p>
+<h2 id="códigos-de-operación">Códigos de operación</h2>
+<p>Antes de enviar nada hay que decirle al servidor <strong>qué
+quieres</strong>. Opciones:</p>
+<ul>
+<li>Carácter: <code>'P'</code></li>
+<li>Entero: <code>0</code></li>
+<li>String: <code>"GETPID"</code></li>
+</ul>
+<p>El <code>char</code> y el entero son los más cómodos para
+<code>switch</code> (en C no podemos hacerlo con un string).</p>
+<h2 id="parte-cliente-ring_remote_pid">Parte cliente:
+<code>ring_remote_pid</code></h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> op <span class="op">=</span> <span class="ch">&#39;P&#39;</span><span class="op">;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>send<span class="op">(</span>s<span class="op">,</span> <span class="op">&amp;</span>op<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">char</span><span class="op">),</span> <span class="dv">0</span><span class="op">);</span> # ¿algún flag<span class="op">?</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> pid<span class="op">;</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>recv<span class="op">(</span>s<span class="op">,</span> <span class="op">&amp;</span>pid<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">),</span> MSG_WAITALL<span class="op">);</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>close<span class="op">(</span>s<span class="op">);</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> ntohl<span class="op">(</span>pid<span class="op">);</span></span></code></pre></div>
+<h2 id="parte-servidora">Parte servidora</h2>
+<div class="sourceCode" id="cb20"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> op<span class="op">;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>recv<span class="op">(</span>soc<span class="op">,</span> <span class="op">&amp;</span>op<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">char</span><span class="op">),</span> MSG_WAITALL<span class="op">);</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="cf">switch</span><span class="op">(</span>op<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> <span class="ch">&#39;P&#39;</span><span class="op">:</span> <span class="op">{</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span> pid <span class="op">=</span> htonl<span class="op">(</span>getpid<span class="op">());</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        write<span class="op">(</span>soc<span class="op">,</span> <span class="op">&amp;</span>pid<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>close<span class="op">(</span>soc<span class="op">);</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> NULL<span class="op">;</span></span></code></pre></div>
+<h2 id="prueba-del-paso-2">Prueba del Paso 2</h2>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./ring</span> dir1</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co"># pulsa P, introduce la IP y puerto del propio nodo</span></span></code></pre></div>
+<pre><code>PID 2576024</code></pre>
+<p>Debe coincidir con el PID del mensaje de bienvenida.</p>
+<h1 id="fase-2">Fase 2</h1>
+<p>Ahora ya hay que ir soltándose un poco, ya no puedo darte todo el
+código.</p>
+<h2 id="debe-gestionarse-la-información-de-qué-nodo-es-el-sucesor">Debe
+gestionarse la información de qué nodo es el sucesor</h2>
+<ul>
+<li><p>¿Quién es el sucesor?: Si soy el primero, pues yo mismo.</p></li>
+<li><p>¿Y si no? Pues se lo pregunto al nodo al que me conecto.</p>
+<ul>
+<li><p>Nueva operación en el servidor.</p></li>
+<li><p>Le envío los datos del sucesor actual que tenga guardado este
+nodo.</p></li>
+</ul></li>
+</ul>
+<h2 id="e-implementarse-la-función-ring_successor-a-partir-de-ella.">e
+implementarse la función ring_successor a partir de ella.</h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">// función local que devuelve la IP y el puerto del nodo sucesor;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co">// retorna 0 si OK y -1 si error</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> ring_successor<span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> <span class="op">*</span>ip<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">short</span> <span class="op">*</span>port<span class="op">)</span> <span class="op">{</span></span></code></pre></div>
+<p>Es un <code>getter</code>, si has hecho el anterior, este es
+<strong>TRIVIAL</strong> (como odio esa palabra).</p>
+<h2 id="sigamos-leyendo-el-enunciado">Sigamos leyendo el enunciado</h2>
+<ul>
+<li>Hay que definir una nueva operación que permita dar de alta un nuevo
+nodo en una red ya existente.</li>
+<li>Esa operación de alta debe enviar al nodo de contacto la información
+del nuevo nodo, que pasará a ser el nuevo sucesor de dicho nodo de
+contacto, y responder al nuevo nodo con la información del sucesor
+actual del nodo de contacto, que pasará a ser el sucesor del nuevo nodo.
+Nótese que es suficiente con que el nuevo nodo envíe su puerto de
+servicio, no necesitando mandar su dirección IP, ya que esta le llega al
+nodo de contacto como parte del protocolo TCP (la propia
+función accept o, posteriormente, getpeername devuelven la dirección IP
+del nodo que se conecta).</li>
+</ul>
+<hr />
+<ul>
+<li>En la función inicial (ring_init) de la parte cliente (ring_cln.c),
+en caso de querer incorporarse a una red ya existente, debe solicitarse
+esa nueva operación, conectándose al nodo de contacto, enviándole el
+código de operación y el puerto de servicio, quedándose a la espera de
+la respuesta que permitirá actualizar el sucesor de ese nuevo nodo, y,
+finalmente, cerrando el socket.</li>
+<li>En la parte servidora (ring_srv.c), hay que ajustar su sucesor con
+los valores correspondientes al nuevo nodo y responder con los que tenía
+previamente como sucesor.</li>
+</ul>
+<p>Pero si ya lo hemos hecho. Venga, vamos a seguir.</p>
+<h2 id="operación-sucesor-de-un-nodo-remoto">Operación sucesor de un
+nodo remoto</h2>
+<p>El objetivo de esta segunda operación remota es incorporar una
+operación que devuelva la dirección IP y puerto de un nodo, de manera
+que, más adelante, nos sirva de base para la operación <em>lookup</em>,
+que devuelve esa misma información.</p>
+<p>Similar a la primera operación remota, que obtenía el PID del proceso
+remoto especificado, pero, en este caso, recibe la información (IP y
+puerto) del sucesor de dicho nodo, en vez de un entero con el PID. Ese
+código hay que incorporarlo en la función get_remote_successor y en la
+parte servidora.</p>
+<p><strong>Traducción</strong>: Cuando nos pidan el sucesor devolver el
+actual. Más o menos lo que hemos hecho en la operación de servidor con
+<code>ring_init</code>. Desde el servidor recibimos la petición y le
+mandamos el sucesor.</p>
+<h2
+id="implementación-de-la-primera-operación-que-usa-el-anillo">Implementación
+de la primera operación que usa el anillo</h2>
+<ul>
+<li>Un usuario en un determinado nodo N1 solicita la operación que
+obtiene el sucesor del sucesor de un determinado nodo que especifica
+(N2), invocando la función ring_remote_successor_successor.</li>
+<li>Como parte del código de esa función, el lado cliente de N1 envía a
+la parte servidora de N2 el mensaje con esa petición y se queda
+esperando la respuesta. Nótese que esta parte tiene el mismo
+comportamiento que las dos operaciones remotas introducidas hasta
+ahora.</li>
+</ul>
+<hr />
+<ul>
+<li>La parte servidora de N2, al detectar esta operación, debe ejercer
+el rol de cliente (este es el punto donde cambia el patrón) enviando la
+operación sucesor (y no sucesor de sucesor), que se implementó en el
+paso previo, a su nodo sucesor (N3), y quedándose a la espera de la
+respuesta. Cuando reciba la respuesta, se la enviará a N1, que estaba
+esperándola.</li>
+<li>La parte servidora de N3 responde a la petición de sucesor.</li>
+</ul>
+<h2 id="cómo-se-hace">¿Cómo se hace?</h2>
+<ul>
+<li><strong>Hay que implementar una nueva operación
+remota.</strong></li>
+<li>En la función ring_remote_successor_successor de la parte cliente,
+hay que incorporar la nueva operación. Dado que tiene las mismas
+características que la operación anterior (no tiene parámetros y
+devuelve IP y puerto), es igual cambiando solamente el código de
+operación.</li>
+</ul>
+<hr />
+<ul>
+<li>La parte servidora, sin embargo, cambia respecto a las operaciones
+anteriores ya que tiene que ejercer de cliente enviando una operación de
+sucesor al siguiente nodo del anillo, esperando su respuesta y enviando
+esta al nodo cliente original. Nótese que, dado que la parte servidora
+está ejerciendo de cliente, es posible usar en esta la
+función ring_remote_successor del lado cliente para implementar parte de
+esta funcionalidad.</li>
+</ul>
+<p><strong>Traducción</strong>: Le pregunto a mi sucesor cuál es su
+sucesor con la op. del aptdo. anterior, y cuando me conteste le contesto
+al cliente con lo que me diga.</p>
+<h1 id="y-ya-está">Y ya está</h1>
+<h1 id="fase-3">Fase 3</h1>
+<p>Ya has hecho las anteriores fases, ahora ya no te puedo guiar tanto,
+pero Costoya, que es un grande, ya lo ha hecho:</p>
+<p><code>copy_read_mmap.c</code></p>
+<p>Literalmente ahí viene hecho para el cliente, y
+<code>copy_sendfile.c</code> para el servidor.</p>
+<h1 id="fase-4">Fase 4</h1>
+<p>Esto es como si fuera recursividad: Le pregunto a mi sucesor si tiene
+el fichero. Si lo tiene me responde. Si no lo tiene, le pregunta a su
+sucesor (si no se agota el TTL llamado <code>hops</code>).</p>
+<p>Cuando llegue al caso base, que tenga el fich, responde y se
+resuelven todas las peticiones pendientes.</p>
+<h1 id="fase-5">Fase 5</h1>
+<p><strong>NO TIENES QUE HACERLA</strong></p>
+<p>Si te funciona lo de antes, <strong>ENHORABUENA, HAS
+TERMINADO</strong>.</p>
+<h1 id="a-currar">A currar</h1>
+<h2 id="haz-funcionar-esto">Haz funcionar esto</h2>
+<p><img src="assets/2026-03-04-19-37-23-image.png" /></p>
+<h2 id="experiencia-personal">Experiencia personal</h2>
+<ul>
+<li><p>Fase 1: Difícil (no sabes cómo empezar).</p></li>
+<li><p>Fase 2: Es seguir lo que estabas haciendo, sencilla.</p></li>
+<li><p>Fase 3: Tiene algo de lío porque tienes que proyectar ficheros y
+demás (<code>mmap</code> y todo eso).</p></li>
+<li><p>Fase 4: Bastante sencilla la verdad. La lógica es ir preguntando
+al sucesor restando 1 en <code>hops</code>.</p></li>
+</ul>
+<h1 id="avanzado">Avanzado</h1>
+<p>Esto es algo adicional, no es puramente de la práctica, y puedes
+omitirlo directamente, pero si utilizas git, y tienes algo de destreza,
+puede llegar a ser muy cómodo:</p>
+<h2 id="entregando-con-git-push">Entregando con git push</h2>
+<p>¿Sabías que triqui puede ser un servidor git?</p>
+<p>Sí, no solo GitHub y GitLab son servidores git. Puedes crear un
+servidor git del siguiente modo:</p>
+<ol type="1">
+<li><p>Ubica en triqui el directorio
+<code>~/DATSI/SSDD/ring.2026</code></p></li>
+<li><p>Da de alta un repositorio (ya sabes, <code>git init</code>.
+Recuerda que las ramas deberían llamarse igual para evitar problemas más
+adelante, aunque no es fundamental.)</p></li>
+<li><p>Regístralo como <code>origin</code> en tu carpeta de
+trabajo.</p></li>
+</ol>
+<h2 id="agregando-orígenes-a-git">Agregando orígenes a git</h2>
+<p>Tienes 2 opciones: Solo usar triqui como origen, o usar tanto triqui
+como github.</p>
+<ul>
+<li><code>git remote add [nombre] [url]</code></li>
+</ul>
+<p>Donde <code>url</code> es
+<code>ssh://usuario@triqui1.fi.upm.es</code>
+<code>/homefi/alumnos/rutaHOME</code>
+<code>/DATSI/SSDD/ring.2026</code></p>
+<p>Recuerda consultar la ruta completa con el mandato</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span></code></pre></div>
+<p>Puedes llamar al remote origin, o simplemente algo como triqui
+(tendrás que hacer <code>git push triqui</code>)</p>
+<h2 id="push-combinado">Push combinado</h2>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> remote add origin https://repo1.git <span class="co"># p.ej. github</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> remote set-url <span class="at">--add</span> <span class="at">--push</span> origin <span class="co"># url triqui de antes</span></span></code></pre></div>
+<p>Nota: Es posible que tengas que configurar el upstream</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push <span class="at">--set-upstream</span> origin main <span class="co"># o master</span></span></code></pre></div>
+<h2 id="entrega-automatizada">Entrega automatizada</h2>
+<p>La gracia de todo esto es que puedas entregar de forma automática al
+hacer push. Para ello:</p>
+<ol type="1">
+<li><p>Accede a <code>~/DATSI/SSDD/ring.2026/.git/hooks</code></p></li>
+<li><p>Crea un fichero <code>post-receive</code></p></li>
+</ol>
+<p>Ese fichero será un script bash con instrucciones a ejecutar cada vez
+que reciba un push. En nuestro caso, queremos que corra el script de
+entrega:</p>
+<h2 id="post-receive-hook">Post-receive hook</h2>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="at">-euo</span> pipefail</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">&quot;/homefi/alumnos/TUHOME/DATSI/SSDD/ring.2026&quot;</span></span></code></pre></div>
+<p><img src="assets/2026-03-05-20-27-13-image.png" /></p>
+<p>La parte roja sustitúyela por tu número de matrícula
+(<code>numMat\ns\ns\n</code>)</p>
+<p>Eso lo que hace es seguir los pasos del corrector:</p>
+<ol type="1">
+<li><p>Número de matrícula.</p></li>
+<li><p>Confirmar entrega.</p></li>
+<li><p>Sobrescribir entrega.</p></li>
+</ol>
+</body>
+</html>
