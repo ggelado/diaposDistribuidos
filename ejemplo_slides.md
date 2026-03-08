@@ -66,8 +66,6 @@ Ya lo iremos definiendo sobre la marcha.
 
 Recuerda: Ya sabes que copiar texto de un PDF a una terminal puede hacer cosas raras.
 
-
-
 Saltos de línea que no debes poner, caracteres raros, comillas... Ten cuidado al copiar y revisa bien. En algunas diapositivas se divide el texto en 2 líneas para que no se corte, eso no significa que en tu terminal deban ser 2 líneas.
 
 ## Ficheros de Trabajo
@@ -179,6 +177,22 @@ switch (cod_operacion) {
 
 # Fase 1 - Paso 1
 
+## Interfaces
+
+```c
+// inicia el nodo añadiéndolo a la red P2P si ya está creada;
+// los puertos e IPs deben estar en formato de red;
+// debe devolver en el último parámetro el puerto reservado 
+// ¡¡¡OJO A ESTO ÚLTIMO!!!: en formato red;
+// retorna 0 si OK y -1 si error
+int ring_init(const char *shared_dir, unsigned int local_ip, 
+    unsigned int remote_ip, unsigned short remote_port, 
+    unsigned short *alloc_port);
+
+// función local que devuelve la IP y el puerto del nodo
+int ring_self(unsigned int *ip, unsigned short *port);
+```
+
 ## Desplegar parte servidora
 
 Vamos con el fichero `ring_cln.c`. 
@@ -222,6 +236,8 @@ ip_copia = local_ip;
 `strdup` para copiar los *Strings*.
 
 ## e implementarse la función `ring_self` a partir de ella.
+
+`ring_self` devuelve los datos propios.
 
 ```c
 int ring_self(unsigned int *ip, unsigned short *port)
@@ -372,29 +388,13 @@ El `char` y el entero son los más cómodos para `switch` (en C no podemos hacer
 
 ```c
 char op = 'P';
-send(s, &op, sizeof(char), 0);
+send(s, &op, sizeof(char), 0); # ¿algún flag?
 
 int pid;
 recv(s, &pid, sizeof(int), MSG_WAITALL);
 close(s);
 return ntohl(pid);
 ```
-
-## Conectar con IP y puerto en formato de red
-
-`create_socket_cln` espera strings. Aquí tenemos enteros en formato red:
-
-```c
-struct sockaddr_in addr;
-addr.sin_family      = AF_INET;
-addr.sin_addr.s_addr = remote_ip;  // formato red
-addr.sin_port        = remote_port; // formato red
-
-int s = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-connect(s, (struct sockaddr *)&addr, sizeof(addr));
-```
-
-Este esquema se repite.
 
 ## Parte servidora
 
@@ -425,6 +425,93 @@ PID 2576024
 ```
 
 Debe coincidir con el PID del mensaje de bienvenida.
+
+# Fase 2
+
+Ahora ya hay que ir soltándose un poco, ya no puedo darte todo el código.
+
+## Debe gestionarse la información de qué nodo es el sucesor
+
+- ¿Quién es el sucesor?: Si soy el primero, pues yo mismo.
+
+- ¿Y si no? Pues se lo pregunto al nodo al que me conecto.
+  
+  - Nueva operación en el servidor.
+  
+  - Le envío los datos del sucesor actual que tenga guardado este nodo.
+
+## e implementarse la función ring_successor a partir de ella.
+
+```c
+// función local que devuelve la IP y el puerto del nodo sucesor;
+// retorna 0 si OK y -1 si error
+int ring_successor(unsigned int *ip, unsigned short *port) {
+```
+
+Es un `getter`, si has hecho el anterior, este es **TRIVIAL** (como odio esa palabra).
+
+## Sigamos leyendo el enunciado
+
+- Hay que definir una nueva operación que permita dar de alta un nuevo nodo en una red ya existente.
+- Esa operación de alta debe enviar al nodo de contacto la información del nuevo nodo, que pasará a ser el nuevo sucesor de dicho nodo de contacto, y responder al nuevo nodo con la información del sucesor actual del nodo de contacto, que pasará a ser el sucesor del nuevo nodo. Nótese que es suficiente con que el nuevo nodo envíe su puerto de servicio, no necesitando mandar su dirección IP, ya que esta le llega al nodo de contacto como parte del protocolo TCP (la propia función accept o, posteriormente, getpeername devuelven la dirección IP del nodo que se conecta).
+
+---
+
+- En la función inicial (ring_init) de la parte cliente (ring_cln.c), en caso de querer incorporarse a una red ya existente, debe solicitarse esa nueva operación, conectándose al nodo de contacto, enviándole el código de operación y el puerto de servicio, quedándose a la espera de la respuesta que permitirá actualizar el sucesor de ese nuevo nodo, y, finalmente, cerrando el socket.
+- En la parte servidora (ring_srv.c), hay que ajustar su sucesor con los valores correspondientes al nuevo nodo y responder con los que tenía previamente como sucesor.
+
+Pero si ya lo hemos hecho. Venga, vamos a seguir.
+
+## Operación sucesor de un nodo remoto
+
+El objetivo de esta segunda operación remota es incorporar una operación que devuelva la dirección IP y puerto de un nodo, de manera que, más adelante, nos sirva de base para la operación *lookup*, que devuelve esa misma información.
+
+Similar a la primera operación remota, que obtenía el PID del proceso remoto especificado, pero, en este caso, recibe la información (IP y puerto) del sucesor de dicho nodo, en vez de un entero con el PID. Ese código hay que incorporarlo en la función get_remote_successor y en la parte servidora.
+
+**Traducción**: Cuando nos pidan el sucesor devolver el actual. Más o menos lo que hemos hecho en la operación de servidor con `ring_init`. Desde el servidor recibimos la petición y le mandamos el sucesor.
+
+## Implementación de la primera operación que usa el anillo
+
+- Un usuario en un determinado nodo N1 solicita la operación que obtiene el sucesor del sucesor de un determinado nodo que especifica (N2), invocando la función ring_remote_successor_successor.
+- Como parte del código de esa función, el lado cliente de N1 envía a la parte servidora de N2 el mensaje con esa petición y se queda esperando la respuesta. Nótese que esta parte tiene el mismo comportamiento que las dos operaciones remotas introducidas hasta ahora.
+
+---
+
+- La parte servidora de N2, al detectar esta operación, debe ejercer el rol de cliente (este es el punto donde cambia el patrón) enviando la operación sucesor (y no sucesor de sucesor), que se implementó en el paso previo, a su nodo sucesor (N3), y quedándose a la espera de la respuesta. Cuando reciba la respuesta, se la enviará a N1, que estaba esperándola.
+- La parte servidora de N3 responde a la petición de sucesor.
+
+## ¿Cómo se hace?
+
+- **Hay que implementar una nueva operación remota.**
+- En la función ring_remote_successor_successor de la parte cliente, hay que incorporar la nueva operación. Dado que tiene las mismas características que la operación anterior (no tiene parámetros y devuelve IP y puerto), es igual cambiando solamente el código de operación.
+
+---
+
+- La parte servidora, sin embargo, cambia respecto a las operaciones anteriores ya que tiene que ejercer de cliente enviando una operación de sucesor al siguiente nodo del anillo, esperando su respuesta y enviando esta al nodo cliente original. Nótese que, dado que la parte servidora está ejerciendo de cliente, es posible usar en esta la función ring_remote_successor del lado cliente para implementar parte de esta funcionalidad.
+
+**Traducción**: Le pregunto a mi sucesor cuál es su sucesor con la op. del aptdo. anterior, y cuando me conteste le contesto al cliente con lo que me diga.
+
+# Y ya está
+
+# Fase 3
+
+Ya has hecho las anteriores fases, ahora ya no te puedo guiar tanto, pero Costoya, que es un grande, ya lo ha hecho:
+
+`copy_read_mmap.c`
+
+Literalmente ahí viene hecho para el cliente, y `copy_sendfile.c` para el servidor.
+
+# Fase 4
+
+Esto es como si fuera recursividad: Le pregunto a mi sucesor si tiene el fichero. Si lo tiene me responde. Si no lo tiene, le pregunta a su sucesor (si no se agota el TTL llamado `hops`).
+
+Cuando llegue al caso base, que tenga el fich, responde y se resuelven todas las peticiones pendientes.
+
+# Fase 5
+
+**NO TIENES QUE HACERLA**
+
+Si te funciona lo de antes, **ENHORABUENA, HAS TERMINADO**.
 
 # A currar
 
