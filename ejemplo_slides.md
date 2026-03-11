@@ -387,11 +387,12 @@ El `char` y el entero son los más cómodos para `switch` (en C no podemos hacer
 ## Parte cliente: `ring_remote_pid`
 
 ```c
+// socket ya creado
 char op = 'P';
 send(s, &op, sizeof(char), 0); # ¿algún flag?
 
 int pid;
-recv(s, &pid, sizeof(int), MSG_WAITALL);
+recv(s, &pid, sizeof(int), MSG_WAITALL); // ¿WAITALL?
 close(s);
 return ntohl(pid);
 ```
@@ -405,7 +406,7 @@ recv(soc, &op, sizeof(char), MSG_WAITALL);
 switch(op) {
     case 'P': {
         int pid = htonl(getpid());
-        write(soc, &pid, sizeof(int));
+        write(soc, &pid, sizeof(int)); // o send casi que mejor
         break;
     }
 }

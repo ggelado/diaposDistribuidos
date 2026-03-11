@@ -536,13 +536,14 @@ quieres</strong>. Opciones:</p>
 <code>switch</code> (en C no podemos hacerlo con un string).</p>
 <h2 id="parte-cliente-ring_remote_pid">Parte cliente:
 <code>ring_remote_pid</code></h2>
-<div class="sourceCode" id="cb19"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> op <span class="op">=</span> <span class="ch">&#39;P&#39;</span><span class="op">;</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>send<span class="op">(</span>s<span class="op">,</span> <span class="op">&amp;</span>op<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">char</span><span class="op">),</span> <span class="dv">0</span><span class="op">);</span> # ¿algún flag<span class="op">?</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> pid<span class="op">;</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>recv<span class="op">(</span>s<span class="op">,</span> <span class="op">&amp;</span>pid<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">),</span> MSG_WAITALL<span class="op">);</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>close<span class="op">(</span>s<span class="op">);</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> ntohl<span class="op">(</span>pid<span class="op">);</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">// socket ya creado</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> op <span class="op">=</span> <span class="ch">&#39;P&#39;</span><span class="op">;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>send<span class="op">(</span>s<span class="op">,</span> <span class="op">&amp;</span>op<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">char</span><span class="op">),</span> <span class="dv">0</span><span class="op">);</span> # ¿algún flag<span class="op">?</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> pid<span class="op">;</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>recv<span class="op">(</span>s<span class="op">,</span> <span class="op">&amp;</span>pid<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">),</span> MSG_WAITALL<span class="op">);</span> <span class="co">// ¿WAITALL?</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>close<span class="op">(</span>s<span class="op">);</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> ntohl<span class="op">(</span>pid<span class="op">);</span></span></code></pre></div>
 <h2 id="parte-servidora">Parte servidora</h2>
 <div class="sourceCode" id="cb20"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> op<span class="op">;</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>recv<span class="op">(</span>soc<span class="op">,</span> <span class="op">&amp;</span>op<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">char</span><span class="op">),</span> MSG_WAITALL<span class="op">);</span></span>
@@ -550,7 +551,7 @@ quieres</strong>. Opciones:</p>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="cf">switch</span><span class="op">(</span>op<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> <span class="ch">&#39;P&#39;</span><span class="op">:</span> <span class="op">{</span></span>
 <span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span> pid <span class="op">=</span> htonl<span class="op">(</span>getpid<span class="op">());</span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        write<span class="op">(</span>soc<span class="op">,</span> <span class="op">&amp;</span>pid<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        write<span class="op">(</span>soc<span class="op">,</span> <span class="op">&amp;</span>pid<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span> <span class="co">// o send casi que mejor</span></span>
 <span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span><span class="op">;</span></span>
 <span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
